@@ -1,9 +1,0 @@
-{% if recentQuestions %}
-<ul>
-  {% for question in recentQuestions %}
-  <li><a href="#">{{ question.title }}</a></li>
-  {% endfor %}
-</ul>
-{% else %}
-<p>No polls are available.</p>
-{% endif %}

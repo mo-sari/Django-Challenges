@@ -39,9 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # apps
-    'questions',
+    'books',
+    'django_extensions',
+    'core',
+    'restaurants',
+    'rest_framework',
 
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
