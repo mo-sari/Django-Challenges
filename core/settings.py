@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # apps
-    'books',
     'django_extensions',
     'core',
     'restaurants',
