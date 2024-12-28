@@ -1,8 +1,14 @@
+from rest_framework import status
+from rest_framework.response import Response
+
+from django.utils import timezone
+from datetime import datetime, timedelta
+
 from rest_framework import generics
 from restaurants import serializers
 from rest_framework.permissions import AllowAny
 from restaurants.models import Restaurant
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound, ValidationError, PermissionDenied
 
 
 class RestaurantsAPIView(generics.ListAPIView):
@@ -36,3 +42,21 @@ class RestaurantByTypeAPIView(generics.ListAPIView):
                 detail=f'No Restaurant was found by the type of {rst_type}')
 
         return Restaurant.objects.filter(restaurant_type__iexact=rst_type)
+
+
+class RestaurantUpdateAPIView(generics.UpdateAPIView):
+    serializer_class = serializers.RestaurantSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        rst_id = self.kwargs['id']
+
+        try:
+            rest = Restaurant.objects.get(id=rst_id)
+            if timezone.now() - rest.date_opened > timedelta(days=365):
+                return rest
+            else:
+                return PermissionDenied(detail='The requested restaurant has not been around for more than a year')
+
+        except Restaurant.DoesNotExist:
+            raise NotFound('Requested Restaurant does not exist')
