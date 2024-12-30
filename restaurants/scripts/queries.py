@@ -5,10 +5,15 @@ from django.db import connection
 from pprint import pprint
 import random
 from django.utils import timezone
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+from django.db.models import Avg, Count, Q, F, Value
+from django.db.models.functions import Coalesce
 
 
 def run():
-    rest = Restaurant.objects.get(id=1)
-    print(rest.date_opened.year)
-    print((timezone.now() - timedelta(days=365)).year)
+    rests = Restaurant.objects.filter(
+        Q(sales__income__gt=5_000) & Q(
+            sales__datetime__date=date.fromisoformat('2024-09-15')))
+
+    for i in rests:
+        print(i)

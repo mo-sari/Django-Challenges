@@ -2,13 +2,15 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from django.utils import timezone
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from rest_framework import generics
 from restaurants import serializers
 from rest_framework.permissions import AllowAny
 from restaurants.models import Restaurant
 from rest_framework.exceptions import NotFound, ValidationError, PermissionDenied
+from django.db.models import Avg, Sum, Min, Max, Count, Value, Q, F
+from django.db.models.functions import Coalesce
 
 
 class RestaurantsAPIView(generics.ListAPIView):
@@ -60,3 +62,50 @@ class RestaurantUpdateAPIView(generics.UpdateAPIView):
 
         except Restaurant.DoesNotExist:
             raise NotFound('Requested Restaurant does not exist')
+
+
+class TopRestaurantsAPIView(generics.ListAPIView):
+    serializer_class = serializers.RestaurantSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+
+        rests = Restaurant.objects.annotate(
+            avg_rating=Avg('ratings__rating')).order_by('-avg_rating')[:5]
+        return rests
+
+
+class AtLeastOneTopRateAPIView(generics.ListAPIView):
+    serializer_class = serializers.RestaurantSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+
+        rests = Restaurant.objects.filter(ratings__rating__gte=5)
+        return rests
+
+
+class ZeroRatingRestaurantsAPIView(generics.ListAPIView):
+    serializer_class = serializers.RestaurantSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+
+        rests = Restaurant.objects.annotate(
+            rat_count=Coalesce(Count('ratings__rating'), Value(0))).filter(
+                rat_count__lt=1)
+        return rests
+
+
+class SpecialIncomInSpecialDayAPIView(generics.ListAPIView):
+    serializer_class = serializers.RestaurantSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        date_str = self.kwargs['date']
+        specific_date = date.fromisoformat(date_str)
+
+        rests = Restaurant.objects.filter(
+            Q(sales__income__gt=5_000) & Q(
+                sales__datetime__date=specific_date))
+        return rests
