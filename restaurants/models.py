@@ -32,6 +32,14 @@ class Rating(models.Model):
                                    related_name='ratings')
     rating = models.PositiveSmallIntegerField()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'restaurant'],
+                name='unique_user_restaurant_rating'
+            )
+        ]
+
     def __str__(self):
         return f"Rating: {self.rating}"
 

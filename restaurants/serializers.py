@@ -1,8 +1,9 @@
 from restaurants.models import Restaurant, Rating, Sale
-from rest_framework.serializers import ModelSerializer
-from rest_framework.serializers import ValidationError
 
-from pprint import pprint
+from rest_framework.serializers import ModelSerializer
+
+from rest_framework.serializers import ValidationError
+from django.db import IntegrityError
 
 
 class RatingSerializer(ModelSerializer):
@@ -10,6 +11,13 @@ class RatingSerializer(ModelSerializer):
     class Meta:
         model = Rating
         fields = '__all__'
+
+    def create(self, validated_data):
+        try:
+            return super().create(validated_data)
+
+        except IntegrityError:
+            raise ValidationError('This user has already rated this restaurant')
 
 
 class SaleSerializer(ModelSerializer):
