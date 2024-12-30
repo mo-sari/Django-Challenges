@@ -21,3 +21,5 @@
 ### 11-Add pagination to the restaurant listing view.
 
 ### 12-Create a paginated endpoint to list all sales for a specific restaurant.
+
+### 13-Ensure the restaurant name always starts with a capital letter during serialization
