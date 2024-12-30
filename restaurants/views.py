@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -7,7 +8,7 @@ from datetime import datetime, timedelta, date
 from rest_framework import generics
 from restaurants import serializers
 from rest_framework.permissions import AllowAny
-from restaurants.models import Restaurant
+from restaurants.models import Restaurant, Rating
 from rest_framework.exceptions import NotFound, ValidationError, PermissionDenied
 from django.db.models import Avg, Sum, Min, Max, Count, Value, Q, F
 from django.db.models.functions import Coalesce
@@ -109,3 +110,23 @@ class SpecialIncomInSpecialDayAPIView(generics.ListAPIView):
             Q(sales__income__gt=5_000) & Q(
                 sales__datetime__date=specific_date))
         return rests
+
+
+class UsersTopRatingResuaurant(generics.RetrieveAPIView):
+    serializer_class = serializers.RestaurantSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        user_id = self.kwargs['user_id']
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise NotFound(detail=f'User with id {user_id} does not exist')
+
+        user_top_rating = user.rating_set.order_by('-rating').first()
+        if not user_top_rating:
+            raise NotFound(
+                detail=f'No ratings found for the user with id {user_id}')
+
+        return user_top_rating.restaurant

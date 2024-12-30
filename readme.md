@@ -14,4 +14,6 @@
 
 ### 8-Implement a view to retrieve restaurants with no ratings.
 
-### 9_Write a query to find restaurants with sales exceeding $5,000 on a specific day.
+### 9-Write a query to find restaurants with sales exceeding $5,000 on a specific day.
+
+### 10-Create a view to retrieve restaurants that belong to a given users highest-rated restaurant.

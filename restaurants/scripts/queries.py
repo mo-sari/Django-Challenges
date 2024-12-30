@@ -6,14 +6,17 @@ from pprint import pprint
 import random
 from django.utils import timezone
 from datetime import datetime, timedelta, date
-from django.db.models import Avg, Count, Q, F, Value
+from django.db.models import Avg, Count, Q, F, Value, Max, Min
 from django.db.models.functions import Coalesce
 
 
 def run():
-    rests = Restaurant.objects.filter(
-        Q(sales__income__gt=5_000) & Q(
-            sales__datetime__date=date.fromisoformat('2024-09-15')))
+    # Create a view to retrieve restaurants that belong to a given users highest-rated restaurant.
+    # user = User.objects.get(id=39)
+    # users_ratings = Rating.objects.filter(user=user).order_by('-rating')[0]
 
-    for i in rests:
-        print(i)
+    # pprint(users_ratings.restaurant)
+
+    user = User.objects.get(id=user_id)
+    user_top_rating = user.rating_set.order_by('-rating').first()
+    return user_top_rating.restaurant
