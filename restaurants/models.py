@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from rest_framework.exceptions import ValidationError
+
 
 class Restaurant(models.Model):
     class TypeChoices(models.TextChoices):
@@ -32,6 +34,20 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"Rating: {self.rating}"
+
+    def clean(self):
+        rating = Rating.objects.filter(
+            user=self.user, restaurant=self.restaurant).first()
+
+        if rating:
+            raise ValidationError(
+                detail='This user has already rated this restaurant')
+
+        return super().clean()
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        return super().save(*args, **kwargs)
 
 
 class Sale(models.Model):

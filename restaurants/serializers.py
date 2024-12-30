@@ -2,6 +2,8 @@ from restaurants.models import Restaurant, Rating, Sale
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import ValidationError
 
+from pprint import pprint
+
 
 class RatingSerializer(ModelSerializer):
 
