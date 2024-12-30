@@ -1,16 +1,19 @@
 from django.contrib.auth.models import User
-from rest_framework import status
-from rest_framework.response import Response
 
 from django.utils import timezone
-from datetime import datetime, timedelta, date
+from datetime import timedelta, date
+
+from restaurants import serializers
+from restaurants.models import Restaurant, Sale
+from restaurants.paginations import LimitedResultsSetPagination
 
 from rest_framework import generics
-from restaurants import serializers
 from rest_framework.permissions import AllowAny
-from restaurants.models import Restaurant, Rating
-from rest_framework.exceptions import NotFound, ValidationError, PermissionDenied
-from django.db.models import Avg, Sum, Min, Max, Count, Value, Q, F
+from rest_framework.exceptions import (
+    NotFound,
+    ValidationError,
+    PermissionDenied)
+from django.db.models import Avg, Count, Value, Q
 from django.db.models.functions import Coalesce
 
 
@@ -18,6 +21,7 @@ class RestaurantsAPIView(generics.ListAPIView):
     serializer_class = serializers.RestaurantSerializer
     permission_classes = [AllowAny]
     queryset = Restaurant.objects.all()
+    pagination_class = LimitedResultsSetPagination
 
 
 class RestaurantAPIView(generics.RetrieveAPIView):
@@ -130,3 +134,22 @@ class UsersTopRatingResuaurant(generics.RetrieveAPIView):
                 detail=f'No ratings found for the user with id {user_id}')
 
         return user_top_rating.restaurant
+
+
+class AllSalesOfSpecificRestaurant(generics.ListAPIView):
+    serializer_class = serializers.SaleSerializer
+    permission_classes = [AllowAny]
+    pagination_class = LimitedResultsSetPagination
+
+    def get_queryset(self):
+        rst_id = self.kwargs['restaurant_id']
+
+        try:
+            restaurant = Restaurant.objects.get(id=rst_id)
+
+        except Restaurant.DoesNotExist:
+            raise NotFound(f'Restaurant with this id: {rst_id} not found')
+
+        sales = Sale.objects.filter(restaurant=restaurant)
+
+        return sales

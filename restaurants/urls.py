@@ -8,7 +8,8 @@ from .views import (
     AtLeastOneTopRateAPIView,
     ZeroRatingRestaurantsAPIView,
     SpecialIncomInSpecialDayAPIView,
-    UsersTopRatingResuaurant)
+    UsersTopRatingResuaurant,
+    AllSalesOfSpecificRestaurant)
 
 
 urlpatterns = [
@@ -19,8 +20,10 @@ urlpatterns = [
     path('restaurants-top/', TopRestaurantsAPIView.as_view()),
     path('at-least-one-top-rate/', AtLeastOneTopRateAPIView.as_view()),
     path('zero-rating-restaurants/', ZeroRatingRestaurantsAPIView.as_view()),
-    path('special-income-in-special-dates/<str:date>/',
+    path('income-in/<str:date>/',
          SpecialIncomInSpecialDayAPIView.as_view()),
     path('users-top-rating-restaurant/<int:user_id>/',
          UsersTopRatingResuaurant.as_view()),
+    path('restaurants/<int:restaurant_id>/sales/',
+         AllSalesOfSpecificRestaurant.as_view())
 ]

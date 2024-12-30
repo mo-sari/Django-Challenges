@@ -17,3 +17,7 @@
 ### 9-Write a query to find restaurants with sales exceeding $5,000 on a specific day.
 
 ### 10-Create a view to retrieve restaurants that belong to a given users highest-rated restaurant.
+
+### 11-Add pagination to the restaurant listing view.
+
+### 12-Create a paginated endpoint to list all sales for a specific restaurant.
