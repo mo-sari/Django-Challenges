@@ -15,13 +15,18 @@ from rest_framework.exceptions import (
     PermissionDenied)
 from django.db.models import Avg, Count, Value, Q
 from django.db.models.functions import Coalesce
+from django.db import connection
+from pprint import pprint
 
 
 class RestaurantsAPIView(generics.ListAPIView):
     serializer_class = serializers.RestaurantSerializer
     permission_classes = [AllowAny]
-    queryset = Restaurant.objects.all()
+    # queryset = Restaurant.objects.all()
     pagination_class = LimitedResultsSetPagination
+
+    def get_queryset(self):
+        return Restaurant.objects.prefetch_related('ratings', 'sales')
 
 
 class RestaurantAPIView(generics.RetrieveAPIView):
@@ -48,10 +53,13 @@ class RestaurantByTypeAPIView(generics.ListAPIView):
             raise ValidationError(
                 detail=f'No Restaurant was found by the type of {rst_type}')
 
-        return Restaurant.objects.filter(restaurant_type__iexact=rst_type)
+        return Restaurant.objects \
+            .prefetch_related('ratings', 'sales') \
+            .filter(restaurant_type__iexact=rst_type)
 
 
 class RestaurantUpdateAPIView(generics.UpdateAPIView):
+    # this view is still not optimized
     serializer_class = serializers.RestaurantSerializer
     permission_classes = [AllowAny]
 
@@ -60,10 +68,13 @@ class RestaurantUpdateAPIView(generics.UpdateAPIView):
 
         try:
             rest = Restaurant.objects.get(id=rst_id)
-            if timezone.now() - rest.date_opened > timedelta(days=365):
+
+            if timezone.now().date() - rest.date_opened > timedelta(days=365):
                 return rest
             else:
-                return PermissionDenied(detail='The requested restaurant has not been around for more than a year')
+                return PermissionDenied(
+                    detail='The requested restaurant has not been \
+                            around for more than a year')
 
         except Restaurant.DoesNotExist:
             raise NotFound('Requested Restaurant does not exist')
@@ -75,8 +86,10 @@ class TopRestaurantsAPIView(generics.ListAPIView):
 
     def get_queryset(self):
 
-        rests = Restaurant.objects.annotate(
-            avg_rating=Avg('ratings__rating')).order_by('-avg_rating')[:5]
+        rests = Restaurant.objects.prefetch_related('ratings', 'sales') \
+            .annotate(avg_rating=Avg('ratings__rating')) \
+            .order_by('-avg_rating')[:5]
+
         return rests
 
 
@@ -86,7 +99,10 @@ class AtLeastOneTopRateAPIView(generics.ListAPIView):
 
     def get_queryset(self):
 
-        rests = Restaurant.objects.filter(ratings__rating__gte=5)
+        rests = Restaurant.objects \
+            .prefetch_related('ratings', 'sales') \
+            .filter(ratings__rating=5)
+
         return rests
 
 
@@ -96,9 +112,11 @@ class ZeroRatingRestaurantsAPIView(generics.ListAPIView):
 
     def get_queryset(self):
 
-        rests = Restaurant.objects.annotate(
-            rat_count=Coalesce(Count('ratings__rating'), Value(0))).filter(
-                rat_count__lt=1)
+        rests = Restaurant.objects \
+            .prefetch_related('ratings', 'sales') \
+            .annotate(rat_count=Coalesce(Count('ratings__rating'), Value(0))) \
+            .filter(rat_count__lt=1)
+
         return rests
 
 
@@ -110,9 +128,11 @@ class SpecialIncomInSpecialDayAPIView(generics.ListAPIView):
         date_str = self.kwargs['date']
         specific_date = date.fromisoformat(date_str)
 
-        rests = Restaurant.objects.filter(
-            Q(sales__income__gt=5_000) & Q(
-                sales__datetime__date=specific_date))
+        rests = Restaurant.objects \
+            .prefetch_related('ratings', 'sales') \
+            .filter(Q(sales__income__gt=5_000) &
+                    Q(sales__datetime__date=specific_date))
+
         return rests
 
 
@@ -132,14 +152,13 @@ class UsersTopRatingResuaurant(generics.RetrieveAPIView):
         if not user_top_rating:
             raise NotFound(
                 detail=f'No ratings found for the user with id {user_id}')
-
         return user_top_rating.restaurant
 
 
 class AllSalesOfSpecificRestaurant(generics.ListAPIView):
     serializer_class = serializers.SaleSerializer
     permission_classes = [AllowAny]
-    pagination_class = LimitedResultsSetPagination
+    # pagination_class = LimitedResultsSetPagination
 
     def get_queryset(self):
         rst_id = self.kwargs['restaurant_id']

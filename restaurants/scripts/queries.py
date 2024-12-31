@@ -6,27 +6,34 @@ from pprint import pprint
 import random
 from django.utils import timezone
 from datetime import datetime, timedelta, date
-from django.db.models import Avg, Count, Q, F, Value, Max, Min
-from django.db.models.functions import Coalesce
+from django.db.models import Avg, Count, Q, F, Value, Max, Min, Sum, Prefetch
+from django.db.models.functions import Coalesce, Greatest
 
 
 def run():
+    # month_ago = timezone.now() - timedelta(days=30)
+    # monthly_sales = Prefetch(
+    #     'sales',
+    #     queryset=Sale.objects.filter(datetime__gte=month_ago)
+    #     )
 
-    # Miller, Perry and Anderson 24
-    # Green and Sons 15
-    # Collins Ltd 9
-    user = User.objects.get(id=19)
-    restaurant = Restaurant.objects.get(id=15)
+    # restaurants = Restaurant \
+    #     .objects \
+    #     .prefetch_related('ratings', monthly_sales) \
+    #     .filter(ratings__rating=5)
 
-    # Rating.objects.create(
-    #     user=user,
-    #     restaurant=restaurant,
-    #     rating=3
-    # )
+    # # pprint(restaurants)
+    # for rst in restaurants:
 
-    rating = Rating(
-        user=user,
-        restaurant=restaurant,
-        rating=3
-    )
-    rating.save()
+    #     for rate in rst.ratings.all():
+    #         print(rate)
+
+    #     for sale in rst.sales.all():
+    #         print(sale)
+    rests = Restaurant.objects.all()[0:2]
+    for rest in rests:
+        sales = rest.sales.all()
+
+        print(sales)
+
+    pprint(connection.queries)
