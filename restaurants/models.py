@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 
 from rest_framework.exceptions import ValidationError
 
+from .manager import RestaurantManager
+
 
 class Restaurant(models.Model):
     class TypeChoices(models.TextChoices):
@@ -21,6 +23,8 @@ class Restaurant(models.Model):
     longitude = models.FloatField()
     restaurant_type = models.CharField(max_length=2,
                                        choices=TypeChoices.choices)
+
+    newManager = RestaurantManager()
 
     def __str__(self):
         return self.name
