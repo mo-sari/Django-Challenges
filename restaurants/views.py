@@ -7,7 +7,10 @@ from restaurants import serializers
 from restaurants.models import Restaurant, Sale
 from restaurants.paginations import LimitedResultsSetPagination
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import generics
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import (
     NotFound,
@@ -15,15 +18,18 @@ from rest_framework.exceptions import (
     PermissionDenied)
 from django.db.models import Avg, Count, Value, Q
 from django.db.models.functions import Coalesce
-from django.db import connection
-from pprint import pprint
+# from django.db import connection
+# from pprint import pprint
 
 
 class RestaurantsAPIView(generics.ListAPIView):
     serializer_class = serializers.RestaurantSerializer
     permission_classes = [AllowAny]
-    # queryset = Restaurant.objects.all()
-    pagination_class = LimitedResultsSetPagination
+
+    # pagination_class = LimitedResultsSetPagination
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = ['name', 'restaurant_type']
+    filterset_fields = ['ratings__rating', 'date_opened']
 
     def get_queryset(self):
         return Restaurant.objects.prefetch_related('ratings', 'sales')
@@ -46,6 +52,7 @@ class RestaurantByTypeAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
+        print(self.request.query_params)
         rst_type = self.kwargs['rst_type']
 
         valid_types = [choice[0] for choice in Restaurant.TypeChoices.choices]

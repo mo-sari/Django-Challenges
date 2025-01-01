@@ -24,7 +24,7 @@ class Restaurant(models.Model):
     restaurant_type = models.CharField(max_length=2,
                                        choices=TypeChoices.choices)
 
-    newManager = RestaurantManager()
+    # newManager = RestaurantManager()
 
     def __str__(self):
         return self.name

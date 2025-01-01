@@ -38,13 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # apps
+
     'django_extensions',
     'core',
     'restaurants',
     'rest_framework',
     'drf_spectacular',
     'debug_toolbar',
+    'django_filters',
 
 ]
 

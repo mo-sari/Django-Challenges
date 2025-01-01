@@ -25,3 +25,7 @@
 ### 13-Ensure the restaurant name always starts with a capital letter during serialization
 
 ### 14-Add validation to check if a rating is provided by the same user for the same restaurant twice
+
+### 15-Implement search functionality for restaurants by name or type.
+
+### 16-Add filters to view restaurants by date opened or rating.
