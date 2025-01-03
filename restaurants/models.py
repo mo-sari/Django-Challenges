@@ -67,3 +67,14 @@ class Sale(models.Model):
         Restaurant, on_delete=models.SET_NULL, null=True, related_name='sales')
     income = models.DecimalField(max_digits=8, decimal_places=2)
     datetime = models.DateTimeField()
+
+
+class Staff(models.Model):
+    name = models.CharField(max_length=100)
+    restaurants = models.ManyToManyField(Restaurant, through='StaffRestaurant')
+
+
+class StaffRestaurant(models.Model):
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    salary = models.PositiveIntegerField()
