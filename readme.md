@@ -29,3 +29,5 @@
 ### 15-Implement search functionality for restaurants by name or type.
 
 ### 16-Add filters to view restaurants by date opened or rating.
+
+### 17-Restrict rating creation to authenticated users.

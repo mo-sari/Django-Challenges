@@ -13,6 +13,7 @@ from .views import (
     CreateRatingAPIView,
     DeleteRatingAPIView,
     GetRatingAPIView,
+    AllRatings,
     )
 
 
@@ -34,4 +35,5 @@ urlpatterns = [
     path('delete-rating/<int:rating_id>/', DeleteRatingAPIView.as_view()),
     path('get-rating/<int:rating_id>/', GetRatingAPIView.as_view()),
     path('get-rating/<int:rating_id>/', GetRatingAPIView.as_view()),
+    path('all-ratings/', AllRatings.as_view()),
 ]

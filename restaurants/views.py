@@ -12,7 +12,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import generics
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated
+)
 from rest_framework.exceptions import (
     NotFound,
     ValidationError,
@@ -187,7 +190,7 @@ class AllSalesOfSpecificRestaurant(generics.ListAPIView):
 
 class CreateRatingAPIView(APIView):
     serializers_class = serializers.RatingSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
 
@@ -249,4 +252,19 @@ class GetRatingAPIView(APIView):
                 {'error':
                  f'requested rating with id: {rating_id} was not found'},
                 status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class AllRatings(APIView):
+    serializer_class = serializers.RatingSerializer
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+
+        ratings = Rating.objects.all()
+        serialized_data = self.serializer_class(ratings, many=True)
+
+        return Response(
+            serialized_data.data,
+            status=status.HTTP_200_OK
             )
