@@ -1,16 +1,19 @@
 from restaurants.models import Restaurant, Rating, Sale
 
 from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
 from rest_framework.serializers import ValidationError
 from django.db import IntegrityError
 
 
 class RatingSerializer(ModelSerializer):
+    restaurant = serializers.CharField(source='restaurant.name')
+    date_opened = serializers.DateField(source='restaurant.date_opened')
 
     class Meta:
         model = Rating
-        fields = '__all__'
+        fields = ['restaurant', 'date_opened']
 
     def create(self, validated_data):
         try:
@@ -28,8 +31,8 @@ class SaleSerializer(ModelSerializer):
 
 
 class RestaurantSerializer(ModelSerializer):
-    ratings = RatingSerializer(many=True)
-    sales = SaleSerializer(many=True)
+    ratings = RatingSerializer(many=True, read_only=True)
+    sales = SaleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Restaurant
