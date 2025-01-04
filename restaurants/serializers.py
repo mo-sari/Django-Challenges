@@ -12,13 +12,18 @@ class RatingSerializer(ModelSerializer):
     date_opened = serializers.DateField(source='restaurant.date_opened')
     restaurant_rating_count = serializers.SerializerMethodField()
 
+    # restaurant = serializers.StringRelatedField()
+    restaurant = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name')
+
     def get_restaurant_rating_count(self, obj):
         return obj.restaurant_rating_count()
 
     class Meta:
         model = Rating
         fields = ['restaurant', 'date_opened', 'resturant_name_length',
-                  'restaurant_rating_count']
+                  'restaurant_rating_count', 'restaurant']
 
     def create(self, validated_data):
         try:
