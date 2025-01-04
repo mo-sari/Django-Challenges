@@ -7,38 +7,63 @@ from pprint import pprint
 import random
 from django.utils import timezone
 from datetime import datetime, timedelta, date
-from django.db.models import Avg, Count, Q, F, Value, Max, Min, Sum, Prefetch
-from django.db.models.functions import Coalesce, Greatest
+from django.db.models import Avg, CharField, Value
+from django.db.models.functions import Coalesce, Greatest, Length, Concat
 
 
 def run():
-    salaries = [28000, 29000, 20000, 30000]
+    # rests = Restaurant.objects.values('name', len=Length('name'))
+    # for i in rests:
+    #     print(i)
+    # ================================================================
+    # rts = Rating.objects.values('user__username', 'restaurant__name')
+    # for i in rts:
+    #     print(i)
+    # ================================================================
+    # rts = Rating.objects.values_list('user__username', 'restaurant__name')
+    # for i in rts:
+    #     print(i)
 
-    staff = [staff
-             for staff in Staff.objects.all()
-             ]
+    # pprint(connection.queries)
+    # ================================================================
 
-    rests = Restaurant.objects.all()
+    # rests = Restaurant.objects.values_list('name', 'date_opened')
+    # for i in rests:
+    #     print(i)
+    # ================================================================
 
-    for rest in rests:
-        for j in range(0, random.randint(3, 6)):
-            rest.staff_set.add(random.choice(staff),
-                               through_defaults={'salary':
-                               random.choice(salaries)})
-
-    # this below is not good for differentiating
-    # the value of each staff's salary
+    # rests = Restaurant.objects.values_list('name', flat=True)
+    # print(rests)
+    # ================================================================
+    # rests = Restaurant.objects.annotate(name_chars=Length('name'))
 
     # for rest in rests:
-    #     rnd = random.randint(0, 5)
-    #     rest.staff_set.set(
-    #         random.choices(staff, k=rnd),
-    #         through_defaults={'salary': random.choice(salaries)}
-    #     )
+    #     print(rest.name_chars)
 
-    # staff = Staff.objects.annotate(count=Count('restaurants'))
-    #     count = 0
-    #     for i in staff:
-    #         count += i.count
+    # rests = Restaurant.objects.annotate(s=Concat('name',
+    #                                              Value(' [ Average Rating = '),
+    #                                              Avg('ratings__rating',
+    #                                                  default=0),
+    #                                              Value(' ]'),
+    #                                              output_field=CharField()))
+    # ================================================================
 
-    #     print(count)
+    # s = Concat(
+    #     'name',
+    #     Value(' [ Average Rating = '),
+    #     Avg('ratings__rating', default=0),
+    #     Value(' ]'),
+    #     output_field=CharField())
+
+    # rests = Restaurant.objects.annotate(message=s).values('name', 'message')
+
+    # for rest in rests:
+    #     print(rest)
+    # ================================================================
+
+    # rests = Restaurant.objects.values('restaurant_type') \
+    #                           .annotate(avg_ratings=Avg('ratings__rating'))
+
+    # for i in rests:
+    #     print(i)
+    # pprint(connection.queries)
