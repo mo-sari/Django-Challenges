@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.functions import Length
 from django.contrib.auth.models import User
 
 from rest_framework.exceptions import ValidationError
@@ -60,6 +61,13 @@ class Rating(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         return super().save(*args, **kwargs)
+
+    @property
+    def resturant_name_length(self):
+        return len(self.restaurant.name)
+
+    def restaurant_rating_count(self):
+        return len(self.restaurant.ratings.all())
 
 
 class Sale(models.Model):

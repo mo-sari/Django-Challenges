@@ -10,10 +10,15 @@ from django.db import IntegrityError
 class RatingSerializer(ModelSerializer):
     restaurant = serializers.CharField(source='restaurant.name')
     date_opened = serializers.DateField(source='restaurant.date_opened')
+    restaurant_rating_count = serializers.SerializerMethodField()
+
+    def get_restaurant_rating_count(self, obj):
+        return obj.restaurant_rating_count()
 
     class Meta:
         model = Rating
-        fields = ['restaurant', 'date_opened']
+        fields = ['restaurant', 'date_opened', 'resturant_name_length',
+                  'restaurant_rating_count']
 
     def create(self, validated_data):
         try:
