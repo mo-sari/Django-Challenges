@@ -9,7 +9,11 @@ from .views import (
     ZeroRatingRestaurantsAPIView,
     SpecialIncomInSpecialDayAPIView,
     UsersTopRatingResuaurant,
-    AllSalesOfSpecificRestaurant)
+    AllSalesOfSpecificRestaurant,
+    CreateRatingAPIView,
+    DeleteRatingAPIView,
+    GetRatingAPIView,
+    )
 
 
 urlpatterns = [
@@ -25,5 +29,9 @@ urlpatterns = [
     path('users-top-rating-restaurant/<int:user_id>/',
          UsersTopRatingResuaurant.as_view()),
     path('restaurants/<int:restaurant_id>/sales/',
-         AllSalesOfSpecificRestaurant.as_view())
+         AllSalesOfSpecificRestaurant.as_view()),
+    path('create-rating/', CreateRatingAPIView.as_view()),
+    path('delete-rating/<int:rating_id>/', DeleteRatingAPIView.as_view()),
+    path('get-rating/<int:rating_id>/', GetRatingAPIView.as_view()),
+    path('get-rating/<int:rating_id>/', GetRatingAPIView.as_view()),
 ]

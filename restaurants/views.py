@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from .models import Rating
 
 from django.utils import timezone
 from datetime import timedelta, date
@@ -16,6 +17,9 @@ from rest_framework.exceptions import (
     NotFound,
     ValidationError,
     PermissionDenied)
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from django.db.models import Avg, Count, Value, Q
 from django.db.models.functions import Coalesce
 # from django.db import connection
@@ -179,3 +183,70 @@ class AllSalesOfSpecificRestaurant(generics.ListAPIView):
         sales = Sale.objects.filter(restaurant=restaurant)
 
         return sales
+
+
+class CreateRatingAPIView(APIView):
+    serializers_class = serializers.RatingSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+
+        serializer = self.serializers_class(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+class DeleteRatingAPIView(APIView):
+    serializer_class = serializers.RatingSerializer
+    permission_classes = [AllowAny]
+
+    def delete(self, request, *args, **kwargs):
+
+        try:
+            rating_id = self.kwargs['rating_id']
+            rating = Rating.objects.get(id=rating_id)
+
+            rating.delete()
+            return Response(
+                {'item successfully deleted'},
+                status=status.HTTP_204_NO_CONTENT
+            )
+        except Rating.DoesNotExist:
+            return Response(
+                {'error': f' request rating with id: {rating_id} \
+                 was not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class GetRatingAPIView(APIView):
+    serializer_class = serializers.RatingSerializer
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+
+        try:
+            rating_id = self.kwargs['rating_id']
+            rating = Rating.objects.get(id=rating_id)
+
+            serialized_rating = self.serializer_class(rating)
+            return Response(
+                serialized_rating.data,
+                status=status.HTTP_200_OK
+            )
+        except Rating.DoesNotExist:
+            return Response(
+                {'error':
+                 f'requested rating with id: {rating_id} was not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
