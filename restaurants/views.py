@@ -23,7 +23,7 @@ from rest_framework.exceptions import (
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Avg, Count, Value, Q
+from django.db.models import Avg, Count, Value, Q, Sum
 from django.db.models.functions import Coalesce
 # from django.db import connection
 # from pprint import pprint
@@ -267,4 +267,41 @@ class AllRatings(APIView):
         return Response(
             serialized_data.data,
             status=status.HTTP_200_OK
+            )
+
+
+class RestaurantAverageRating(APIView):
+    serializer_class = serializers.RestaurantAvgRatingSerializer
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            rest_id = self.kwargs['rest_id']
+
+            # restaurant = Restaurant.objects.prefetch_related('ratings') \
+            #                                .get(id=rest_id)
+
+            # ratings_avg = restaurant.ratings.aggregate(
+            #     avg_rating=Avg('rating'))
+
+            # return Response(
+            #     ratings_avg,
+            #     status=status.HTTP_200_OK
+            # )
+
+            restaurant = Restaurant.objects.prefetch_related('ratings') \
+                                           .values('name', 'id') \
+                                           .annotate(
+                                               avg_rating=Avg(
+                                                   'ratings__rating')) \
+                                           .get(id=rest_id)
+
+            return Response(
+                restaurant['avg_rating'],
+                status=status.HTTP_200_OK
+            )
+        except Restaurant.DoesNotExist:
+            return Response(
+                {'error': f'Restaurant with id: ({id}) does not exist'},
+                status=status.HTTP_404_NOT_FOUND
             )

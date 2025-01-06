@@ -54,3 +54,10 @@ class RestaurantSerializer(ModelSerializer):
                 detail=f'The restaurant name provided ({value}) does not start with an upper case letter')
 
         return value
+
+
+class RestaurantAvgRatingSerializer(serializers.Serializer):
+    avg_rating = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2
+    )

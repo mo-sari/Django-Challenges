@@ -31,3 +31,5 @@
 ### 16-Add filters to view restaurants by date opened or rating.
 
 ### 17-Restrict rating creation to authenticated users.
+
+### 18-Write a custom view to calculate and return the average rating for a specific restaurant.
