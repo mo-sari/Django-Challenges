@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from .models import Rating
+from .filters import IncomeInDateRangeFilter
 
 from django.utils import timezone
 from datetime import timedelta, date
@@ -305,3 +306,34 @@ class RestaurantAverageRating(APIView):
                 {'error': f'Restaurant with id: ({id}) does not exist'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+
+# rest = Restaurant.objects.prefetch_related('sales') \
+#                              .get(id=33)
+
+#     sales = rest.sales.filter(datetime__range=[prev_date.date(), now]) \
+#                       .aggregate(total_sale=Sum('income'))
+#     print(sales)
+
+# ?start_date=2025-01-01&end_date=2025-01-31
+class RestaurantTotalIncomeOverDateRange(APIView):
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = IncomeInDateRangeFilter
+
+    def get(self, request, *args, **kwargs):
+
+        filters = IncomeInDateRangeFilter(request.GET, Sale.objects.all())
+        if filters.is_bound and not filters.is_valid():
+            return Response(
+                filters.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        qs = filters.qs if filters.is_bound else Sale.objects.all()
+        sales = qs.filter(restaurant__id=self.kwargs['rest_id'])
+        total_sale = sales.aggregate(total_sale=Sum('income'))
+
+        return Response(
+            total_sale,
+            status=status.HTTP_200_OK
+        )

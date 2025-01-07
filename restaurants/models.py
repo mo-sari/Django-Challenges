@@ -76,6 +76,9 @@ class Sale(models.Model):
     income = models.DecimalField(max_digits=8, decimal_places=2)
     datetime = models.DateTimeField()
 
+    def __str__(self):
+        return f'{self.restaurant.name} income: {self.income}'
+
 
 class Staff(models.Model):
     name = models.CharField(max_length=100)

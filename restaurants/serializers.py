@@ -30,7 +30,9 @@ class RatingSerializer(ModelSerializer):
             return super().create(validated_data)
 
         except IntegrityError:
-            raise ValidationError('This user has already rated this restaurant')
+            raise ValidationError(
+                'This user has already rated this restaurant'
+                )
 
 
 class SaleSerializer(ModelSerializer):

@@ -14,7 +14,8 @@ from .views import (
     DeleteRatingAPIView,
     GetRatingAPIView,
     AllRatings,
-    RestaurantAverageRating
+    RestaurantAverageRating,
+    RestaurantTotalIncomeOverDateRange
     )
 
 
@@ -40,4 +41,5 @@ urlpatterns = [
 
     path('restaurant/<int:rest_id>/average/',
          RestaurantAverageRating.as_view()),
+    path('something/<int:rest_id>/', RestaurantTotalIncomeOverDateRange.as_view()),
 ]
