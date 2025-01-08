@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 
 from rest_framework.exceptions import ValidationError
 
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+
 from .manager import RestaurantManager
 
 
@@ -89,3 +92,22 @@ class StaffRestaurant(models.Model):
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     salary = models.PositiveIntegerField()
+
+
+@receiver(pre_save, sender=Restaurant)
+def pre_save_restaurant(sender, instance, *args, **kwargs):
+    print('======================================================')
+    print(f'the name of the Restaurant we"re about to create is {instance.name}')
+
+
+@receiver(post_save, sender=Restaurant)
+def post_save_restaurant(sender, instance, created, *args, **kwargs):
+    print('======================================================')
+    if created:
+        print(f'the name of newly created restaurant is {instance.name}')
+    else:
+        print(f'the name of already existing restaurant is {instance.name}')
+
+# if for example we wanted to slugify a field on Model, its better to do it
+# in pre_save because in post_save we have to manually call save() one more
+#  time and it just seems reduntant

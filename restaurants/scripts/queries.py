@@ -1,76 +1,79 @@
-from rest_framework.exceptions import ValidationError
-from restaurants.models import Restaurant, Rating, Sale, Staff, StaffRestaurant
-from django.contrib.auth.models import User
-from faker import Faker
-from django.db import connection
-from pprint import pprint
 import random
+from datetime import date, datetime, timedelta
+from pprint import pprint
+
+from django.contrib.auth.models import User
+from django.db import connection
+from django.db.models import (Avg, Case, CharField, Count, F, FloatField,
+                              IntegerField, Max, Q, Subquery, Sum, Value,
+                              When, OuterRef, Exists)
+from django.db.models.functions import Coalesce, Concat, Greatest, Length
 from django.utils import timezone
-from datetime import datetime, timedelta, date
-from django.db.models import Avg, CharField, Value, Sum, Case, When, Count, F, FloatField, IntegerField, Q
-from django.db.models.functions import Coalesce, Greatest, Length, Concat
+from faker import Faker
+from rest_framework.exceptions import ValidationError
+
+from restaurants.models import Rating, Restaurant, Sale, Staff, StaffRestaurant
 
 
 def run():
-    # rests = Restaurant.objects.prefetch_related('sales').annotate(
-    #     sales_count=Count('sales')
-    # ).annotate(
-    #     is_top_seller=Case(
-    #         When(sales_count__gt=1, then=True),
-    #         default=False
-    #     )
-    # )
+    # sales = Sale.objects.filter(restaurant__restaurant_type__in=['IT', "CH"])
 
     # pprint(
-    #     rests.values('sales_count', 'is_top_seller')
+    #     len(sales)
     # )
-    # pprint(
-    #     rests.filter(is_top_seller=True)
+    # we could write the exact same thing with Subquery
+
+    # this below is the way to do it with subqueries
+
+    # rests = Restaurant.objects.filter(restaurant_type__in=['IT', 'CH'])
+    # sales = Sale.objects.filter(restaurant__in=Subquery(rests.values('pk')))
+
+    # print(len(sales))
+    # ==================================================================
+    # annotate each restaurant with the income generated from its MOST RECENT sale
+
+    # sales = Sale.objects.filter(restaurant=OuterRef('pk')) \
+    #                     .order_by('-income') \
+
+    # rests = Restaurant.objects.annotate(rest_last_sale=Subquery(
+    #     sales.values('income')[:1]
+    # ))
+
+    # for rest in rests:
+    #     print(rest.name, rest.rest_last_sale)
+    # ==================================================================
+
+    # filter to restaurants that have any sales with income > 2500
+    # rests = Restaurant.objects.filter(
+    #     Exists(Sale.objects.filter(
+    #         restaurant=OuterRef('pk'),
+    #         income__gt=2500
+    #     ))
     # )
-    # =====================================================================
-    # rests = Restaurant.objects.annotate(
-    #     avg_rating=Coalesce(Avg('ratings__rating'), Value(0),
-    #                         output_field=FloatField()),
-    #     num_rating=Coalesce(Count('ratings__pk'), Value(0),
-    #                         output_field=IntegerField())) \
-    #                           .annotate(
-    #                               rating_bucket=Case(
-    #                                   When(avg_rating__gt=3.5,
-    #                                        then=Value('Highly rated')),
-    #                                   When(avg_rating__range=(2.5, 3.5),
-    #                                        then=Value('Normal rated')),
-    #                                   When(avg_rating__lt=2.5,
-    #                                        then=Value('Bad rating')),
-    #                                   default=Value('No ratings'),
-    #                                   output_field=CharField()
-    #                               )
-    #                           )
-    # pprint(
-    #     rests.filter(rating_bucket='Highly rated')
-    # )
-    # pprint(
-    #     rests.filter(rating_bucket='Normal rated')
+
+    # for rest in rests:
+    #     print(rest.name)
+    # ==================================================================
+
+    # filter to restaurants that have a five star rating
+    # rests = Restaurant.objects.filter(
+    #     Exists(Rating.objects.filter(
+    #         restaurant=OuterRef('pk'),
+    #         rating=5
+    #     ))
     # )
 
-    rst_type = Restaurant.TypeChoices
+    # for rest in rests:
+    #     print(rest.name)
+    # ==================================================================
 
-    Asian = Q(restaurant_type=rst_type.INDIAN) | \
-        Q(restaurant_type=rst_type.CHINESE)
-
-    European = Q(restaurant_type=rst_type.GREEK) | \
-        Q(restaurant_type=rst_type.ITALIAN)
-
-    South_American = Q(restaurant_type=rst_type.MEXICAN)
-
-    rests = Restaurant.objects.annotate(
-        continent=Case(
-            When(Asian, then=Value('Asian')),
-            When(European, then=Value('European')),
-            When(South_American, then=Value('South American')),
-            default=Value('N/A')
-        )
+    # filter to restaurants that had a sale in the last five days
+    rests = Restaurant.objects.filter(
+        Exists(Sale.objects.filter(
+            restaurant=OuterRef('pk'),
+            datetime__gt=timezone.now() - timedelta(days=1000)
+        ))
     )
 
-    pprint(
-        rests.filter(continent='Asian')
-    )
+    for rest in rests:
+        print(rest.name)
