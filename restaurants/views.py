@@ -26,8 +26,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Avg, Count, Value, Q, Sum
 from django.db.models.functions import Coalesce
-# from django.db import connection
-# from pprint import pprint
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class RestaurantsAPIView(generics.ListAPIView):
@@ -52,6 +53,7 @@ class RestaurantAPIView(generics.RetrieveAPIView):
         try:
             return Restaurant.objects.get(name__iexact=rst_name)
         except Restaurant.DoesNotExist:
+            logger.error('the requested restaurant does not exist')
             raise NotFound(detail=f'Restaurant with name {rst_name} not found')
 
 
@@ -308,14 +310,6 @@ class RestaurantAverageRating(APIView):
             )
 
 
-# rest = Restaurant.objects.prefetch_related('sales') \
-#                              .get(id=33)
-
-#     sales = rest.sales.filter(datetime__range=[prev_date.date(), now]) \
-#                       .aggregate(total_sale=Sum('income'))
-#     print(sales)
-
-# ?start_date=2025-01-01&end_date=2025-01-31
 class RestaurantTotalIncomeOverDateRange(APIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = IncomeInDateRangeFilter

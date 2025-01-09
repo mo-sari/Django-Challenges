@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -176,3 +176,32 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.redirects.RedirectsPanel',
     'debug_toolbar.panels.profiling.ProfilingPanel',
 ]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "general.log",
+            "level": "DEBUG",
+            "formatter": "varbose"
+        }
+    },
+    "loggers": {
+        "": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+        }
+    },
+    "formatters": {
+        "simple": {
+            "format": "{name} {asctime} {levelname} {message}",
+            "style": "{"
+        },
+        "varbose": {
+            "format": "{asctime}:{levelname} - {name} {module}.py (line {lineno:d}). {message}",
+            "style": "{"
+        }
+    }
+}
