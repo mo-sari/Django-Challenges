@@ -1,0 +1,12 @@
+2025-01-09 03:58:29,041:INFO - django.utils.autoreload autoreload.py (line 668). Watching for file changes with StatReloader
+2025-01-09 03:58:36,437:ERROR - restaurants.views views.py (line 56). the requested restaurant does not exist
+2025-01-09 03:58:36,466:WARNING - django.request log.py (line 248). Not Found: /rests/restaurant/arquez/
+2025-01-09 03:59:10,683:INFO - django.utils.autoreload autoreload.py (line 266). C:\Users\Mohcen\Desktop\Django_Training\core\settings.py changed, reloading.
+2025-01-09 03:59:11,664:INFO - django.utils.autoreload autoreload.py (line 668). Watching for file changes with StatReloader
+2025-01-09 03:59:18,113:ERROR - restaurants.views views.py (line 56). the requested restaurant does not exist
+2025-01-09 03:59:18,148:WARNING - django.request log.py (line 248). Not Found: /rests/restaurant/arquez/
+2025-01-09 04:02:11,232:INFO - django.utils.autoreload autoreload.py (line 266). C:\Users\Mohcen\Desktop\Django_Training\core\settings.py changed, reloading.
+2025-01-09 04:02:12,164:INFO - django.utils.autoreload autoreload.py (line 668). Watching for file changes with StatReloader
+2025-01-09 04:02:34,474:INFO - django.utils.autoreload autoreload.py (line 266). C:\Users\Mohcen\Desktop\Django_Training\core\settings.py changed, reloading.
+2025-01-09 04:02:35,462:INFO - django.utils.autoreload autoreload.py (line 668). Watching for file changes with StatReloader
+2025-01-09 04:02:53,468:INFO - django.utils.autoreload autoreload.py (line 266). C:\Users\Mohcen\Desktop\Django_Training\core\settings.py changed, reloading.
