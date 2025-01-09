@@ -1,4 +1,8 @@
+from rest_framework.decorators import action
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from rest_framework.viewsets import ViewSet
+
 from .models import Rating
 from .filters import IncomeInDateRangeFilter
 
@@ -329,5 +333,38 @@ class RestaurantTotalIncomeOverDateRange(APIView):
 
         return Response(
             total_sale,
+            status=status.HTTP_200_OK
+        )
+
+
+class RestaurantViewSet(ViewSet):
+
+    def list(self, request):
+        queryset = Restaurant.objects.prefetch_related('ratings', 'sales')
+        serializer = serializers.RestaurantSerializer(
+            queryset,
+            many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = Restaurant.objects.all()
+        restaurant = get_object_or_404(queryset, pk=pk)
+        serializer = serializers.RestaurantSerializer(restaurant)
+        return Response(serializer.data)
+
+    @action(methods=['get'], detail=True)
+    def restaurant_stat(self, request, pk=None):
+        queryset = Restaurant.objects.annotate(
+                                      sales_count=Count('sales'),
+                                      total_income=Sum('sales__income',
+                                                       default=Value(0.0)),
+                                      avg_rating=Avg('ratings__rating',
+                                                     default=Value(0.0))
+                                  )
+        restaurant = get_object_or_404(queryset, pk=pk)
+
+        serializer = serializers.RestaurantStatistics(restaurant)
+        return Response(
+            serializer.data,
             status=status.HTTP_200_OK
         )

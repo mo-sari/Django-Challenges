@@ -37,3 +37,7 @@
 ### 19-Build a view to calculate the total income for a restaurant over a date range.
 
 ### 20-Use Django signals to create a log entry whenever a new rating is added.
+
+### 21-Use DRF's ViewSet to combine listing and retrieval views for restaurants.
+
+### 22-Add custom actions to a ViewSet for calculating restaurant statistics.

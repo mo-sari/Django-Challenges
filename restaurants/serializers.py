@@ -63,3 +63,15 @@ class RestaurantAvgRatingSerializer(serializers.Serializer):
         max_digits=5,
         decimal_places=2
     )
+
+
+class RestaurantStatistics(serializers.Serializer):
+    sales_count = serializers.IntegerField()
+    total_income = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+    avg_rating = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )

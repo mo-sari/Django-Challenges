@@ -1,4 +1,6 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
+
 from .views import (
     RestaurantsAPIView,
     RestaurantAPIView,
@@ -15,7 +17,8 @@ from .views import (
     GetRatingAPIView,
     AllRatings,
     RestaurantAverageRating,
-    RestaurantTotalIncomeOverDateRange
+    RestaurantTotalIncomeOverDateRange,
+    RestaurantViewSet
     )
 
 
@@ -41,5 +44,10 @@ urlpatterns = [
 
     path('restaurant/<int:rest_id>/average/',
          RestaurantAverageRating.as_view()),
-    path('something/<int:rest_id>/', RestaurantTotalIncomeOverDateRange.as_view()),
+    path('something/<int:rest_id>/',
+         RestaurantTotalIncomeOverDateRange.as_view()),
 ]
+
+router = DefaultRouter()
+router.register('restaurants-viewset', RestaurantViewSet, basename='restaurant')
+urlpatterns += router.urls
