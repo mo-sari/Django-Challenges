@@ -186,22 +186,31 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": env('DJANGO_LOG_FILE'),
             "level": env('DJANGO_LOG_LEVEL'),
-            "formatter": "varbose"
+            "formatter": "verbose"
         },
         "console": {
             "class": "logging.StreamHandler",
             "level": env('DJANGO_LOG_LEVEL'),
             "formatter": "simple",
+        },
+        "file_views": {
+            "class": "logging.FileHandler",
+            "filename": 'django_logs.views.txt',
+            'formatter': "verbose"
         }
     },
     "loggers": {
-        # this empty "" means all logger objects will use this configurations
-        # we can change it to a named and it will only capture logs coming from
-        # the logger with the same name
+        "restaurants": {
+            "handlers": ['file_views'],
+            "level": env('DJANGO_LOG_LEVEL'),
+        },
         "restaurants.views": {
-            # now this configuration will not capture any other logs
             "handlers": ["file", "console"],
             "level": env("DJANGO_LOG_LEVEL"),
+            # restaurants is the parent of restaurants.views so every logger
+            # that by default will go up this hierarchy tree and reach the parent
+            # from the child , to set this default behaviour to false ==>
+            "propagate": False
         }
     },
     "formatters": {
@@ -209,7 +218,7 @@ LOGGING = {
             "format": "{name} {asctime} {levelname} {message}",
             "style": "{"
         },
-        "varbose": {
+        "verbose": {
             "format": "{asctime}:{levelname} - {name} {module}.py (line {lineno:d}). {message}",
             "style": "{"
         }
