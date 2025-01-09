@@ -35,3 +35,5 @@
 ### 18-Write a custom view to calculate and return the average rating for a specific restaurant.
 
 ### 19-Build a view to calculate the total income for a restaurant over a date range.
+
+### 20-Use Django signals to create a log entry whenever a new rating is added.

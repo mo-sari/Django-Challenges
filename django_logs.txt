@@ -1,1 +1,1 @@
-2025-01-09 04:15:53,353:ERROR - restaurants.views views.py (line 56). the requested restaurant does not exist
+2025-01-09 05:01:33,325:INFO - add_rating models.py (line 102). A new Rating was added

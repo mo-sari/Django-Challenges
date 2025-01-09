@@ -8,7 +8,9 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 from .manager import RestaurantManager
+import logging
 
+logger = logging.getLogger('add_rating')
 
 class Restaurant(models.Model):
     class TypeChoices(models.TextChoices):
@@ -94,20 +96,7 @@ class StaffRestaurant(models.Model):
     salary = models.PositiveIntegerField()
 
 
-@receiver(pre_save, sender=Restaurant)
-def pre_save_restaurant(sender, instance, *args, **kwargs):
-    print('======================================================')
-    print(f'the name of the Restaurant we"re about to create is {instance.name}')
-
-
-@receiver(post_save, sender=Restaurant)
-def post_save_restaurant(sender, instance, created, *args, **kwargs):
-    print('======================================================')
+@receiver(post_save, sender=Rating)
+def log_rating_add(sender, instance, created, *args, **kwargs):
     if created:
-        print(f'the name of newly created restaurant is {instance.name}')
-    else:
-        print(f'the name of already existing restaurant is {instance.name}')
-
-# if for example we wanted to slugify a field on Model, its better to do it
-# in pre_save because in post_save we have to manually call save() one more
-#  time and it just seems reduntant
+        logger.info('A new Rating was added')

@@ -207,10 +207,11 @@ LOGGING = {
         "restaurants.views": {
             "handlers": ["file", "console"],
             "level": env("DJANGO_LOG_LEVEL"),
-            # restaurants is the parent of restaurants.views so every logger
-            # that by default will go up this hierarchy tree and reach the parent
-            # from the child , to set this default behaviour to false ==>
             "propagate": False
+        },
+        "add_rating": {
+            "handlers": ['file'],
+            'level': 'INFO',
         }
     },
     "formatters": {
