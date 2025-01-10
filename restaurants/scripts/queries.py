@@ -16,8 +16,29 @@ from restaurants.models import Rating, Restaurant, Sale, Staff, StaffRestaurant
 
 
 def run():
-    # Implement a view to get all users who rated a specific restaurant.
-    rest_id = 11
-    rest_ratings = Rating.objects.filter(restaurant__id=rest_id).values('user')
+    #  Find the average rating of restaurants
+    #  that have been rated more than 2 times.
 
-    print(rest_ratings)
+    # without subqueries solution
+
+    # rests = Restaurant.objects.prefetch_related('ratings') \
+    #                   .annotate(rat_count=Count('ratings')) \
+    #                   .filter(rat_count__gte=2) \
+    #                   .annotate(rat_avg=Avg('ratings__rating'))
+
+    # for rest in rests:
+    #     print(rest.id, rest.rat_avg)
+
+    # solution with subqueries
+
+    # ratings = Rating.objects.filter(restaurant=OuterRef('pk')) \
+    #                         .values('restaurant') \
+    #                         .annotate(rat_count=Count('rating')) \
+    #                         .filter(rat_count__gte=2) \
+    #                         .values('restaurant')
+
+    # rests = Restaurant.objects.filter(id__in=Subquery(ratings)) \
+    #                           .annotate(avg_rating=Avg('ratings__rating'))
+
+    # print(rests)
+    # pprint(connection.queries)

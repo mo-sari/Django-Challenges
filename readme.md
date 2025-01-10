@@ -47,3 +47,5 @@
 ### 24-Create a QuerySet to find the most popular restaurant type.
 
 ### 25-Implement a view to get all users who rated a specific restaurant.
+
+### 26-Write a query to find the average rating of restaurants that have been rated more than 2 times.
