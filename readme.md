@@ -41,3 +41,7 @@
 ### 21-Use DRF's ViewSet to combine listing and retrieval views for restaurants.
 
 ### 22-Add custom actions to a ViewSet for calculating restaurant statistics.
+
+### 23-Write a custom QuerySet method to get restaurants with a specific average rating.
+
+### 24-Create a QuerySet to find the most popular restaurant type.
