@@ -49,3 +49,5 @@
 ### 25-Implement a view to get all users who rated a specific restaurant.
 
 ### 26-Write a query to find the average rating of restaurants that have been rated more than 2 times.
+
+### 27-Find restaurants with the longest name length where the average rating is above 3.5

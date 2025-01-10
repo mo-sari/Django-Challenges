@@ -16,29 +16,19 @@ from restaurants.models import Rating, Restaurant, Sale, Staff, StaffRestaurant
 
 
 def run():
-    #  Find the average rating of restaurants
-    #  that have been rated more than 2 times.
+    # Find restaurants with the longest name
+    # length where the average rating is above 3.5
 
-    # without subqueries solution
+    rests_name_len = Restaurant.objects.annotate(
+        avg_rating=Avg('ratings__rating'),
+        name_len=Length('name')
+    ).filter(avg_rating__gte=3.5).aggregate(max_name_len=Max('name_len'))['max_name_len']
 
-    # rests = Restaurant.objects.prefetch_related('ratings') \
-    #                   .annotate(rat_count=Count('ratings')) \
-    #                   .filter(rat_count__gte=2) \
-    #                   .annotate(rat_avg=Avg('ratings__rating'))
+    rests = Restaurant.objects.annotate(
+        avg_rating=Avg('ratings__rating'),
+        name_len=Length('name')
+    ).filter(avg_rating__gte=3.5,
+             name_len=rests_name_len)
 
-    # for rest in rests:
-    #     print(rest.id, rest.rat_avg)
-
-    # solution with subqueries
-
-    # ratings = Rating.objects.filter(restaurant=OuterRef('pk')) \
-    #                         .values('restaurant') \
-    #                         .annotate(rat_count=Count('rating')) \
-    #                         .filter(rat_count__gte=2) \
-    #                         .values('restaurant')
-
-    # rests = Restaurant.objects.filter(id__in=Subquery(ratings)) \
-    #                           .annotate(avg_rating=Avg('ratings__rating'))
-
-    # print(rests)
-    # pprint(connection.queries)
+    for rest in rests:
+        print(rest)
