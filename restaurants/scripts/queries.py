@@ -16,36 +16,8 @@ from restaurants.models import Rating, Restaurant, Sale, Staff, StaffRestaurant
 
 
 def run():
-    # Write a custom QuerySet method to get restaurants with a specific average rating.
-    # rests = Restaurant.objects.prefetch_related('ratings') \
-    #     .annotate(
-    #     avg_rating=Avg('ratings__rating')
-    #    ).filter(avg_rating__gte=3.5)
+    # Implement a view to get all users who rated a specific restaurant.
+    rest_id = 11
+    rest_ratings = Rating.objects.filter(restaurant__id=rest_id).values('user')
 
-    # ratings = Rating.objects.filter(restaurant=OuterRef('pk')) \
-    #                         .values('restaurant') \
-    #                         .annotate(
-    #                             avg_rating=Avg('rating')) \
-    #                         .values('avg_rating')
-
-    # rests = Restaurant.objects.annotate(
-    #     avg_rating=Subquery(ratings)
-    # ).filter(avg_rating__gte=3.5)
-
-    # for rest in rests:
-    #     print(rest.name, rest.id, rest.avg_rating)
-
-    # ==============================================================
-    # Create a QuerySet to find the most popular restaurant type.
-    # popular_type = Restaurant.objects.values('restaurant_type') \
-    #                                  .annotate(
-    #                                      avg_rating=Avg('ratings__rating')) \
-    #                                  .order_by('-avg_rating')[:1]
-
-    top_rating = Rating.objects.filter(restaurant=OuterRef('pk')) \
-                               .values('restaurant__restaurant_type') \
-                               .annotate(avg_rating=Avg('rating')) \
-                               .order_by('-avg_rating')[:1]
-
-
-    print(top_rating)
+    print(rest_ratings)

@@ -45,3 +45,5 @@
 ### 23-Write a custom QuerySet method to get restaurants with a specific average rating.
 
 ### 24-Create a QuerySet to find the most popular restaurant type.
+
+### 25-Implement a view to get all users who rated a specific restaurant.

@@ -368,3 +368,32 @@ class RestaurantViewSet(ViewSet):
             serializer.data,
             status=status.HTTP_200_OK
         )
+
+
+class RestaurantRatingUsers(APIView):
+    serializer_class = serializers.UserSerializer
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+
+        try:
+            rest_id = self.kwargs['rest_id']
+            restaurant = Restaurant.objects.get(id=rest_id)
+
+            restaurant_ratings = Rating.objects \
+                                       .filter(restaurant=restaurant) \
+                                       .select_related('user')
+
+            ratings_users = restaurant_ratings.values_list('user', flat=True)
+            users = User.objects.filter(id__in=ratings_users)
+            serializer = self.serializer_class(users, many=True)
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+            )
+
+        except Restaurant.DoesNotExist:
+            return Response(
+                {'errors': f'Restaurant with id : ({rest_id} does not exist)'},
+                status=status.HTTP_404_NOT_FOUND
+            )

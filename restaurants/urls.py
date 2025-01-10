@@ -18,7 +18,8 @@ from .views import (
     AllRatings,
     RestaurantAverageRating,
     RestaurantTotalIncomeOverDateRange,
-    RestaurantViewSet
+    RestaurantViewSet,
+    RestaurantRatingUsers
     )
 
 
@@ -46,6 +47,8 @@ urlpatterns = [
          RestaurantAverageRating.as_view()),
     path('something/<int:rest_id>/',
          RestaurantTotalIncomeOverDateRange.as_view()),
+    path('restaurant-rating-users/<int:rest_id>/',
+         RestaurantRatingUsers.as_view())
 ]
 
 router = DefaultRouter()

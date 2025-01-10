@@ -1,5 +1,5 @@
 from restaurants.models import Restaurant, Rating, Sale
-
+from django.contrib.auth.models import User
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
@@ -7,23 +7,22 @@ from rest_framework.serializers import ValidationError
 from django.db import IntegrityError
 
 
-class RatingSerializer(ModelSerializer):
-    restaurant = serializers.CharField(source='restaurant.name')
-    date_opened = serializers.DateField(source='restaurant.date_opened')
-    restaurant_rating_count = serializers.SerializerMethodField()
+class UserSerializer(serializers.ModelSerializer):
 
-    # restaurant = serializers.StringRelatedField()
-    restaurant = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='name')
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
+
+class RatingSerializer(ModelSerializer):
+    user = UserSerializer(many=False)
 
     def get_restaurant_rating_count(self, obj):
         return obj.restaurant_rating_count()
 
     class Meta:
         model = Rating
-        fields = ['restaurant', 'date_opened', 'resturant_name_length',
-                  'restaurant_rating_count', 'restaurant']
+        fields = '__all__'
 
     def create(self, validated_data):
         try:

@@ -12,6 +12,7 @@ import logging
 
 logger = logging.getLogger('add_rating')
 
+
 class Restaurant(models.Model):
     class TypeChoices(models.TextChoices):
         INDIAN = 'IN', 'Indian'
