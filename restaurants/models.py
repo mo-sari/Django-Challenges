@@ -2,6 +2,9 @@ from django.db import models
 from django.db.models.functions import Length
 from django.contrib.auth.models import User
 
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+
 from rest_framework.exceptions import ValidationError
 
 from django.db.models.signals import post_save, pre_save
@@ -101,3 +104,10 @@ class StaffRestaurant(models.Model):
 def log_rating_add(sender, instance, created, *args, **kwargs):
     if created:
         logger.info('A new Rating was added')
+
+
+class Comment(models.Model):
+    text = models.TextField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveSmallIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')

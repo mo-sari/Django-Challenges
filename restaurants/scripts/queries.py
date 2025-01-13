@@ -12,23 +12,14 @@ from django.utils import timezone
 from faker import Faker
 from rest_framework.exceptions import ValidationError
 
-from restaurants.models import Rating, Restaurant, Sale, Staff, StaffRestaurant
+from restaurants.models import Rating, Restaurant, Sale, Staff, StaffRestaurant, Comment
 from django.contrib.contenttypes.models import ContentType
 
 
 def run():
-    content_type = ContentType.objects.get(
-        app_label='restaurants',
-        model='sale')
-    print(content_type.model_class())
+    # we're running these after we added couple of
+    # comments using admin panel
 
-    print('====================================')
-
-    sales = content_type.model_class()
-    print(sales.objects.all())
-
-    print('=================================')
-
-    sale = content_type.get_object_for_this_type(
-        restaurant__name='New name')
-    print(sale)
+    comments = Comment.objects.all()
+    for comment in comments:
+        print(type(comment.content_object), comment.text)
