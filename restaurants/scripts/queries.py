@@ -13,22 +13,22 @@ from faker import Faker
 from rest_framework.exceptions import ValidationError
 
 from restaurants.models import Rating, Restaurant, Sale, Staff, StaffRestaurant
+from django.contrib.contenttypes.models import ContentType
 
 
 def run():
-    # Find restaurants with the longest name
-    # length where the average rating is above 3.5
+    content_type = ContentType.objects.get(
+        app_label='restaurants',
+        model='sale')
+    print(content_type.model_class())
 
-    rests_name_len = Restaurant.objects.annotate(
-        avg_rating=Avg('ratings__rating'),
-        name_len=Length('name')
-    ).filter(avg_rating__gte=3.5).aggregate(max_name_len=Max('name_len'))['max_name_len']
+    print('====================================')
 
-    rests = Restaurant.objects.annotate(
-        avg_rating=Avg('ratings__rating'),
-        name_len=Length('name')
-    ).filter(avg_rating__gte=3.5,
-             name_len=rests_name_len)
+    sales = content_type.model_class()
+    print(sales.objects.all())
 
-    for rest in rests:
-        print(rest)
+    print('=================================')
+
+    sale = content_type.get_object_for_this_type(
+        restaurant__name='New name')
+    print(sale)
