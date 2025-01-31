@@ -1,0 +1,14 @@
+djangorestframework
+djangorestframework-simplejwt
+psycopg2
+psycopg2-binary
+psycopg
+Django
+django-cors-headers
+drf-spectacular
+django-environ
+django-silk
+Faker
+pyjwt
+django-extensions
+django-redis
