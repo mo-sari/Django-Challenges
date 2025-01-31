@@ -1,0 +1,2 @@
+2025-01-09 05:01:33,325:INFO - add_rating models.py (line 102). A new Rating was added
+2025-01-11 00:30:11,295:INFO - add_rating models.py (line 103). A new Rating was added
